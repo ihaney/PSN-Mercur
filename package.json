@@ -22,5 +22,9 @@
     "lint": "turbo run lint",
     "codegen": "cd .",
     "generate:oas": "turbo run generate:oas"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.11",
+    "react-hot-toast": "^2.6.0"
   }
 }
