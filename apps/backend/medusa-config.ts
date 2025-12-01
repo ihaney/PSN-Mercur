@@ -1,4 +1,4 @@
-import { defineConfig } from '@medusajs/framework/utils'
+import { defineConfig } from '@medusajs/framework'
 import { loadEnv } from '@medusajs/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
