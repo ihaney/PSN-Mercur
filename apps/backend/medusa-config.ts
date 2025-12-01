@@ -8,10 +8,11 @@ module.exports = defineConfig({
     http: {
       storeCors: process.env.STORE_CORS || 'http://localhost:3000',
       adminCors: process.env.ADMIN_CORS || 'http://localhost:7001',
-      vendorCors: process.env.VENDOR_CORS || 'http://localhost:3000',
       authCors: process.env.AUTH_CORS || 'http://localhost:3000',
       jwtSecret: process.env.JWT_SECRET || 'supersecret',
-      cookieSecret: process.env.COOKIE_SECRET || 'supersecret'
+      cookieSecret: process.env.COOKIE_SECRET || 'supersecret',
+      // @ts-expect-error - vendorCors is a Mercur-specific property not in Medusa types
+      vendorCors: process.env.VENDOR_CORS || 'http://localhost:3000',
     }
   },
   plugins: [
