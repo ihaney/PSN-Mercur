@@ -6,6 +6,8 @@ const plugins = [
   {
     resolve: '@mercurjs/b2c-core',
     options: {}
+    // Note: b2c-core's payout provider requires STRIPE_SECRET_API_KEY
+    // to be set in environment variables, even if payment module is not used
   },
   {
     resolve: '@mercurjs/commission',
@@ -37,6 +39,57 @@ const plugins = [
   }
 ]
 
+// Build modules array conditionally
+const modules = []
+
+// Only include payment module if Stripe API key is set
+if (process.env.STRIPE_SECRET_API_KEY) {
+  modules.push({
+    resolve: '@medusajs/medusa/payment',
+    options: {
+      providers: [
+        {
+          resolve:
+            '@mercurjs/payment-stripe-connect/providers/stripe-connect',
+          id: 'stripe-connect',
+          options: {
+            apiKey: process.env.STRIPE_SECRET_API_KEY
+          }
+        }
+      ]
+    }
+  })
+}
+
+// Notification module
+modules.push({
+  resolve: '@medusajs/medusa/notification',
+  options: {
+    providers: [
+      ...(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL
+        ? [
+            {
+              resolve: '@mercurjs/resend/providers/resend',
+              id: 'resend',
+              options: {
+                channels: ['email'],
+                api_key: process.env.RESEND_API_KEY,
+                from: process.env.RESEND_FROM_EMAIL
+              }
+            }
+          ]
+        : []),
+      {
+        resolve: '@medusajs/medusa/notification-local',
+        id: 'local',
+        options: {
+          channels: ['feed', 'seller_feed']
+        }
+      }
+    ]
+  }
+})
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -51,44 +104,5 @@ module.exports = defineConfig({
     }
   },
   plugins,
-  modules: [
-    {
-      resolve: '@medusajs/medusa/payment',
-      options: {
-        providers: [
-          {
-            resolve:
-              '@mercurjs/payment-stripe-connect/providers/stripe-connect',
-            id: 'stripe-connect',
-            options: {
-              apiKey: process.env.STRIPE_SECRET_API_KEY
-            }
-          }
-        ]
-      }
-    },
-    {
-      resolve: '@medusajs/medusa/notification',
-      options: {
-        providers: [
-          {
-            resolve: '@mercurjs/resend/providers/resend',
-            id: 'resend',
-            options: {
-              channels: ['email'],
-              api_key: process.env.RESEND_API_KEY,
-              from: process.env.RESEND_FROM_EMAIL
-            }
-          },
-          {
-            resolve: '@medusajs/medusa/notification-local',
-            id: 'local',
-            options: {
-              channels: ['feed', 'seller_feed']
-            }
-          }
-        ]
-      }
-    }
-  ]
+  modules
 })
