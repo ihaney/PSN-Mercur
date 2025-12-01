@@ -2,6 +2,41 @@ import { defineConfig, loadEnv } from '@medusajs/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+const plugins = [
+  {
+    resolve: '@mercurjs/b2c-core',
+    options: {}
+  },
+  {
+    resolve: '@mercurjs/commission',
+    options: {}
+  },
+  // Only include Algolia if both env vars are set
+  ...(process.env.ALGOLIA_APP_ID && process.env.ALGOLIA_API_KEY
+    ? [
+        {
+          resolve: '@mercurjs/algolia',
+          options: {
+            apiKey: process.env.ALGOLIA_API_KEY,
+            appId: process.env.ALGOLIA_APP_ID
+          }
+        }
+      ]
+    : []),
+  {
+    resolve: '@mercurjs/reviews',
+    options: {}
+  },
+  {
+    resolve: '@mercurjs/requests',
+    options: {}
+  },
+  {
+    resolve: '@mercurjs/resend',
+    options: {}
+  }
+]
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -15,35 +50,7 @@ module.exports = defineConfig({
       vendorCors: process.env.VENDOR_CORS || 'http://localhost:3000',
     }
   },
-  plugins: [
-    {
-      resolve: '@mercurjs/b2c-core',
-      options: {}
-    },
-    {
-      resolve: '@mercurjs/commission',
-      options: {}
-    },
-    {
-      resolve: '@mercurjs/algolia',
-      options: {
-        apiKey: process.env.ALGOLIA_API_KEY,
-        appId: process.env.ALGOLIA_APP_ID
-      }
-    },
-    {
-      resolve: '@mercurjs/reviews',
-      options: {}
-    },
-    {
-      resolve: '@mercurjs/requests',
-      options: {}
-    },
-    {
-      resolve: '@mercurjs/resend',
-      options: {}
-    }
-  ],
+  plugins,
   modules: [
     {
       resolve: '@medusajs/medusa/payment',

@@ -15,7 +15,7 @@ import NotificationCenter from '@/components/psn/NotificationCenter';
 // import { useSavedItems } from '@/hooks/useSavedItems';
 // import { useSavedSuppliers } from '@/hooks/useSavedSuppliers';
 // import { useConversations } from '@/hooks/useConversations';
-import { useCart } from '@/components/providers/Cart';
+import { useCartContext } from '@/components/providers';
 // TODO: Migrate admin auth to Medusa
 // import { useAdminAuth } from '@/hooks/useAdminAuth';
 // TODO: Migrate language context
@@ -54,7 +54,8 @@ export default function Navbar() {
   const savedItems: any[] = [];
   const savedSuppliers: any[] = [];
   const conversations: any[] = [];
-  const { itemCount: cartItemCount } = useCart();
+  const { cart } = useCartContext();
+  const cartItemCount = cart?.items?.length || 0;
   // TODO: Uncomment when admin auth is migrated
   // const { isAdmin: isAdminUser, loading: adminLoading } = useAdminAuth(false);
   const isAdminUser = false;
