@@ -30,6 +30,7 @@
     "@medusajs/cli": "2.10.2",
     "@medusajs/framework": "2.10.2",
     "@medusajs/medusa": "2.10.2",
+    "@medusajs/utils": "2.10.2",
     "@mercurjs/framework": "*",
     "@mercurjs/b2c-core": "*",
     "@mercurjs/commission": "*",
