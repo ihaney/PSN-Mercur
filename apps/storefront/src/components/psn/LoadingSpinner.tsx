@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { Spinner } from '@/components/psn/atoms/Spinner/Spinner';
+import { Spinner } from '@/components/atoms/Spinner/Spinner';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';

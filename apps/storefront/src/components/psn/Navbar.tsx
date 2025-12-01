@@ -25,7 +25,7 @@ import { useCartContext } from '@/components/providers';
 import toast from 'react-hot-toast';
 // TODO: Migrate isomorphic helpers
 // import { isBrowser } from '@/lib/isomorphic-helpers';
-import { getCurrentUser } from '@/lib/data/cookies';
+import { getCurrentUser, removeAuthToken } from '@/lib/data/user-actions';
 import { sdk } from '@/lib/config';
 
 interface Category {
@@ -133,7 +133,6 @@ export default function Navbar() {
       // TODO: Replace with Medusa logout
       // await sdk.auth.logout();
       // Remove auth token
-      const { removeAuthToken } = await import('@/lib/data/cookies');
       await removeAuthToken();
       setUser(null);
       router.push('/');

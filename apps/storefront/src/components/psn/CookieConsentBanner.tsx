@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Cookie, Shield, Settings } from 'lucide-react';
-import { getCurrentUser } from '@/lib/data/cookies';
+import { getCurrentUser } from '@/lib/data/user-actions';
 
 interface CookiePreferences {
   necessary: boolean;

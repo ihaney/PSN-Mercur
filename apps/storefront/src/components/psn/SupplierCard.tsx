@@ -16,7 +16,7 @@ import toast from 'react-hot-toast';
 // import { LazyImage } from '@/components/psn/atoms/LazyImage/LazyImage';
 // import ComplianceBadgeStrip from '@/components/psn/compliance/ComplianceBadgeStrip';
 // import { SUPPLIER_CARD_SIZES } from '@/lib/imageOptimization';
-import { getCurrentUser } from '@/lib/data/cookies';
+import { getCurrentUser } from '@/lib/data/user-actions';
 
 interface Supplier {
   // Mercur format fields

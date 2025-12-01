@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { PRODUCT_CARD_SIZES } from '@/lib/helpers/imageOptimization';
 import { formatPrice, isRequestQuotePrice } from '@/lib/helpers/priceFormatter';
 import { createSupplierUrl } from '@/lib/helpers/urlHelpers';
-import { getCurrentUser } from '@/lib/data/cookies';
+import { getCurrentUser } from '@/lib/data/user-actions';
 import { sdk } from '@/lib/config';
 import Image from 'next/image';
 

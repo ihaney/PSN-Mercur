@@ -14,6 +14,13 @@ import {
   setAuthToken,
 } from "./cookies"
 
+// Add this server action wrapper for getCurrentUser
+export const getCurrentUser = async () => {
+  // Dynamically import to avoid bundling server-only code in client
+  const { getCurrentUser: getCurrentUserFromCookies } = await import("./cookies")
+  return await getCurrentUserFromCookies()
+}
+
 export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
     const authHeaders = await getAuthHeaders()
