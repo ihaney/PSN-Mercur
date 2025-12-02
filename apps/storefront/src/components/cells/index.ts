@@ -18,7 +18,8 @@ import { ProductDetailsSeller } from "./ProductDetailsSeller/ProductDetailsSelle
 import { ProductDetailsSellerReviews } from "./ProductDetailsSellerReviews/ProductDetailsSellerReviews"
 import { ProductDetailsFooter } from "./ProductDetailsFooter/ProductDetailsFooter"
 import { ProductCarousel } from "./ProductCarousel/ProductCarousel"
-import { SellerReviewTab } from "./SellerReviewTab/SellerReviewTab"
+// SellerReviewTab removed from barrel export - it's a server component and causes bundling issues
+// Import it directly: import { SellerReviewTab } from "@/components/cells/SellerReviewTab/SellerReviewTab"
 import { CartItemsHeader } from "./CartItemsHeader/CartItemsHeader"
 import { CartItemsFooter } from "./CartItemsFooter/CartItemsFooter"
 import { CartItemsProducts } from "./CartItemsProducts/CartItemsProducts"
@@ -52,7 +53,7 @@ export {
   ProductDetailsSellerReviews,
   ProductDetailsFooter,
   ProductCarousel,
-  SellerReviewTab,
+  // SellerReviewTab removed - import directly from its file
   CartItemsHeader,
   CartItemsFooter,
   CartItemsProducts,
