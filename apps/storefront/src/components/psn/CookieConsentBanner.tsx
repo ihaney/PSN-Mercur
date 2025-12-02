@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Cookie, Shield, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { getCurrentUser } from '@/lib/data/user-actions';
 
 interface CookiePreferences {
@@ -147,7 +148,7 @@ export default function CookieConsentBanner() {
                   </h2>
                   <p className="text-gray-600 mb-4">
                     We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.
-                    By clicking "Accept All", you consent to our use of cookies.
+                    By clicking &quot;Accept All&quot;, you consent to our use of cookies.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <button
@@ -288,9 +289,9 @@ export default function CookieConsentBanner() {
 
               <p className="text-xs text-gray-500 mt-4 text-center">
                 For more information, please read our{' '}
-                <a href="/policies#cookies" className="text-blue-600 hover:underline">
+                <Link href="/policies#cookies" className="text-blue-600 hover:underline">
                   Cookie Policy
-                </a>
+                </Link>
               </p>
             </div>
           )}

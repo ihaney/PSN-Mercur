@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X, MessageSquare, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface MessageTemplate {
   id: string;
@@ -55,6 +57,13 @@ export default function MessageTemplatesManager({
 
   const fetchTemplates = async () => {
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('message_templates')
         .select('*')
@@ -79,9 +88,15 @@ export default function MessageTemplatesManager({
     }
 
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) {
+      const user = await getCurrentUser();
+      if (!user) {
         toast.error('You must be logged in');
+        return;
+      }
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
         return;
       }
 
@@ -92,7 +107,7 @@ export default function MessageTemplatesManager({
           title: formData.title,
           content: formData.content,
           category: formData.category,
-          created_by: session.user.id
+          created_by: user.id
         });
 
       if (error) throw error;
@@ -114,6 +129,12 @@ export default function MessageTemplatesManager({
     }
 
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
+
       const { error } = await supabase
         .from('message_templates')
         .update({
@@ -139,6 +160,12 @@ export default function MessageTemplatesManager({
     if (!confirm('Are you sure you want to delete this template?')) return;
 
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
+
       const { error } = await supabase
         .from('message_templates')
         .update({ is_active: false })
@@ -156,7 +183,10 @@ export default function MessageTemplatesManager({
 
   const handleSelectTemplate = async (template: MessageTemplate) => {
     if (onSelectTemplate) {
-      await supabase.rpc('increment_template_usage', { p_template_id: template.id });
+      const supabase = createClientSupabaseClient();
+      if (supabase) {
+        await supabase.rpc('increment_template_usage', { p_template_id: template.id });
+      }
       onSelectTemplate(template.content);
       toast.success('Template inserted');
     }

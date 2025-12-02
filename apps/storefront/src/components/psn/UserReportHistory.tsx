@@ -53,9 +53,14 @@ export default function UserReportHistory() {
   const { data: reports = [], isLoading, error } = useQuery({
     queryKey: ['user-reports'],
     queryFn: async () => {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
-
+      const user = await getCurrentUser();
       if (!user) return [];
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('data_reports')
@@ -107,7 +112,7 @@ export default function UserReportHistory() {
     return (
       <div className="text-center py-12 bg-gray-800/50 rounded-lg border border-gray-700">
         <Flag className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-        <p className="text-gray-400">You haven't submitted any reports yet</p>
+        <p className="text-gray-400">You haven&apos;t submitted any reports yet</p>
         <p className="text-sm text-gray-500 mt-2">Use the flag icon on any page to report data issues</p>
       </div>
     );

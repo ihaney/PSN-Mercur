@@ -18,6 +18,7 @@ import useGetAllSearchParams from '@/hooks/useGetAllSearchParams'
 import { useWishlistToggle } from '@/hooks/useWishlistToggle'
 import type { HttpTypes } from '@medusajs/types'
 import type { SellerProps } from '@/types/seller'
+import type { Product } from '@/types/product'
 
 // Lazy load components
 const FreightHelper = lazy(() => import('@/components/psn/FreightHelper'))
@@ -260,11 +261,14 @@ export default function ProductPageClient({
                 Not available in your region
               </p>
             )}
-            {product.metadata?.moq && (
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                MOQ: {product.metadata.moq}
-              </p>
-            )}
+            {(() => {
+              const moq = product.metadata?.moq;
+              return moq ? (
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  MOQ: {String(moq)}
+                </p>
+              ) : null;
+            })()}
           </div>
 
           <div className="mb-6">
@@ -352,7 +356,7 @@ export default function ProductPageClient({
               <div>
                 <dt className="text-gray-600 dark:text-gray-400">Country</dt>
                 <dd className="dark:text-gray-100 light:text-gray-900">
-                  {product.regions?.[0]?.name || 'N/A'}
+                  {(product as any).regions?.[0]?.name || product.metadata?.country || 'N/A'}
                 </dd>
               </div>
               <div>
@@ -373,12 +377,14 @@ export default function ProductPageClient({
             Related Products
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <ProductCard 
-                key={relatedProduct.id} 
-                product={relatedProduct}
-              />
-            ))}
+            {relatedProducts
+              .filter((p) => 'brand' in p && 'size' in p && 'price' in p)
+              .map((relatedProduct) => (
+                <ProductCard 
+                  key={relatedProduct.id} 
+                  product={relatedProduct as Product}
+                />
+              ))}
           </div>
         </section>
       )}

@@ -149,7 +149,7 @@ export default function NotificationSearchBar({ onResultClick, compact = false }
               <div className="text-center py-8">
                 <Search className="w-12 h-12 dark:text-gray-600 light:text-gray-300 mx-auto mb-3" />
                 <p className="text-sm dark:text-gray-400 light:text-gray-600">
-                  No notifications found matching "{searchQuery}"
+                  No notifications found matching &quot;{searchQuery}&quot;
                 </p>
               </div>
             )}

@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface AdminRouteProps {
   children: React.ReactNode;
@@ -21,10 +23,16 @@ export default function AdminRoute({ children, locale }: AdminRouteProps) {
   const { data: isAdmin, isLoading, error } = useQuery({
     queryKey: ['isAdmin'],
     queryFn: async () => {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
+      const user = await getCurrentUser();
       if (!user) return false;
 
-      const { data, error } = await supabase.rpc('is_admin');
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        return false;
+      }
+
+      const { data, error } = await supabase.rpc('is_admin', { user_id: user.id });
       if (error) {
         console.error('Error checking admin status:', error);
         return false;

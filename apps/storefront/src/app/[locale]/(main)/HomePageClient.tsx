@@ -44,14 +44,16 @@ export default function HomePageClient({ initialProducts, locale }: HomePageClie
               Featured Products
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map((product, index) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product}
-                  priority={index < 4}
-                  index={index}
-                />
-              ))}
+              {products
+                .filter((p): p is Product => 'brand' in p && 'size' in p && 'price' in p)
+                .map((product, index) => (
+                  <ProductCard 
+                    key={product.id} 
+                    product={product}
+                    priority={index < 4}
+                    index={index}
+                  />
+                ))}
             </div>
           </div>
         </section>

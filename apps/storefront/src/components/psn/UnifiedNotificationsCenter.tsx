@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter, useParams } from 'next/navigation';
 import { formatPrice } from '@/lib/helpers/priceFormatter';
 import LoadingSpinner from './LoadingSpinner';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 type NotificationType = 'all' | 'price_drop' | 'stock' | 'backorder' | 'preorder';
 
@@ -19,8 +21,11 @@ export default function UnifiedNotificationsCenter() {
   const { data: priceAlerts, isLoading: priceAlertsLoading } = useQuery({
     queryKey: ['triggeredPriceAlerts'],
     queryFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) return [];
+      const user = await getCurrentUser();
+      if (!user) return [];
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return [];
 
       const { data, error } = await supabase
         .from('dynamic_price_alerts')
@@ -32,7 +37,7 @@ export default function UnifiedNotificationsCenter() {
             Product_Image_URL
           )
         `)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .eq('status', 'triggered')
         .eq('notification_sent', false)
         .order('triggered_at', { ascending: false });
@@ -46,8 +51,11 @@ export default function UnifiedNotificationsCenter() {
   const { data: stockNotifications, isLoading: stockLoading } = useQuery({
     queryKey: ['recentStockNotifications'],
     queryFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) return [];
+      const user = await getCurrentUser();
+      if (!user) return [];
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return [];
 
       const { data, error } = await supabase
         .from('stock_notification_history')
@@ -59,7 +67,7 @@ export default function UnifiedNotificationsCenter() {
             Product_Image_URL
           )
         `)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .is('opened_at', null)
         .order('sent_at', { ascending: false })
         .limit(20);
@@ -73,8 +81,11 @@ export default function UnifiedNotificationsCenter() {
   const { data: backorders, isLoading: backordersLoading } = useQuery({
     queryKey: ['pendingBackorders'],
     queryFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) return [];
+      const user = await getCurrentUser();
+      if (!user) return [];
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return [];
 
       const { data, error } = await supabase
         .from('backorders')
@@ -86,7 +97,7 @@ export default function UnifiedNotificationsCenter() {
             Product_Image_URL
           )
         `)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .in('status', ['pending', 'partially_fulfilled'])
         .order('updated_at', { ascending: false });
 
@@ -99,8 +110,11 @@ export default function UnifiedNotificationsCenter() {
   const { data: preorders, isLoading: preordersLoading } = useQuery({
     queryKey: ['pendingPreorders'],
     queryFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) return [];
+      const user = await getCurrentUser();
+      if (!user) return [];
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return [];
 
       const { data, error } = await supabase
         .from('preorders')
@@ -112,7 +126,7 @@ export default function UnifiedNotificationsCenter() {
             Product_Image_URL
           )
         `)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .in('status', ['pending', 'confirmed'])
         .order('updated_at', { ascending: false});
 
@@ -256,7 +270,7 @@ export default function UnifiedNotificationsCenter() {
                   <Bell className="w-12 h-12 text-gray-600 mb-4" />
                   <p className="text-gray-400">No notifications</p>
                   <p className="text-sm text-gray-500 mt-2">
-                    You're all caught up!
+                    You&apos;re all caught up!
                   </p>
                 </div>
               ) : (

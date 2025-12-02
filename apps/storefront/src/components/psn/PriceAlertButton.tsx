@@ -5,6 +5,8 @@ import { Bell, BellOff, TrendingDown, Target, X } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import type { DynamicPriceAlert } from '../types';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface PriceAlertButtonProps {
   productId: string;
@@ -27,14 +29,17 @@ export default function PriceAlertButton({
   const { data: existingAlert } = useQuery({
     queryKey: ['priceAlert', productId],
     queryFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) return null;
+      const user = await getCurrentUser();
+      if (!user) return null;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return null;
 
       const { data, error } = await supabase
         .from('dynamic_price_alerts')
         .select('*')
         .eq('product_id', productId)
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .eq('status', 'active')
         .maybeSingle();
 
@@ -46,11 +51,14 @@ export default function PriceAlertButton({
 
   const createAlert = useMutation({
     mutationFn: async () => {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session) throw new Error('Not authenticated');
+      const user = await getCurrentUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) throw new Error('Service unavailable');
 
       const alertData: any = {
-        user_id: session.user.id,
+        user_id: user.id,
         product_id: productId,
         alert_type: alertType,
         current_price: currentPrice,
@@ -222,7 +230,7 @@ export default function PriceAlertButton({
                     required
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    We'll notify you when the price drops to or below this amount
+                    We&apos;ll notify you when the price drops to or below this amount
                   </p>
                 </div>
               )}
@@ -245,7 +253,7 @@ export default function PriceAlertButton({
                     required
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    We'll notify you when the price drops by {percentageThreshold || '10'}% or more
+                    We&apos;ll notify you when the price drops by {percentageThreshold || '10'}% or more
                   </p>
                 </div>
               )}
@@ -253,7 +261,7 @@ export default function PriceAlertButton({
               {alertType === 'any_drop' && (
                 <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                   <p className="text-sm text-blue-300">
-                    You'll be notified whenever the price decreases by any amount
+                    You&apos;ll be notified whenever the price decreases by any amount
                   </p>
                 </div>
               )}

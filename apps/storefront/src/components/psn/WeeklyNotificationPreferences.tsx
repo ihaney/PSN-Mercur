@@ -103,7 +103,7 @@ export default function WeeklyNotificationPreferences() {
           <div className="flex items-start gap-2 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
             <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
             <p className="text-sm dark:text-blue-300 light:text-blue-700">
-              You'll receive a consolidated email digest once a week with all price drops on your saved items.
+              You&apos;ll receive a consolidated email digest once a week with all price drops on your saved items.
             </p>
           </div>
 

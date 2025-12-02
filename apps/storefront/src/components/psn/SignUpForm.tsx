@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
 import HoneypotFields from './HoneypotFields';
 import { validateHoneypot, HoneypotTracker } from '@/lib/honeypot';
+import { resendVerificationEmail } from '@/lib/data/email-actions';
+import { sdk } from '@/lib/config';
 
 interface SignUpFormProps {
   onSignUpSuccess?: () => void;
@@ -49,10 +51,7 @@ export default function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
   const handleResendVerification = async () => {
     setResendLoading(true);
     try {
-      const { error } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - resend({
-        type: 'signup',
-        email: unverifiedEmail,
-      });
+      const { error } = await resendVerificationEmail(unverifiedEmail);
 
       if (error) {
         if (error.message.includes('rate limit') || error.message.includes('too many requests')) {
@@ -119,7 +118,8 @@ export default function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
     setShowResendOption(false);
 
     try {
-      const { data: authData, error: signUpError } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - signUp({
+      // Use Medusa SDK for customer signup
+      const { customer, error: signUpError } = await sdk.store.customer.create({
         email,
         password,
       });
@@ -128,8 +128,8 @@ export default function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
         throw signUpError;
       }
 
-      if (!authData.user) {
-        throw new Error('No user returned from signup');
+      if (!customer) {
+        throw new Error('No customer returned from signup');
       }
 
       toast.success('Account created! Please check your email to verify your account.');

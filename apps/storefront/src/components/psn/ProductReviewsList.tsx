@@ -5,6 +5,8 @@ import { Star, ThumbsUp, ThumbsDown, Flag, CheckCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface ProductReviewsListProps {
   productId: string;
@@ -33,6 +35,9 @@ export default function ProductReviewsList({ productId }: ProductReviewsListProp
   const { data: reviews, isLoading } = useQuery({
     queryKey: ['product-reviews', productId, sortBy, filterRating],
     queryFn: async () => {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return [];
+
       let query = supabase
         .from('product_reviews')
         .select('*, user_profiles(full_name)')
@@ -62,6 +67,9 @@ export default function ProductReviewsList({ productId }: ProductReviewsListProp
   const { data: reviewStats } = useQuery({
     queryKey: ['product-review-stats', productId],
     queryFn: async () => {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return null;
+
       const { data, error } = await supabase
         .rpc('get_product_review_stats', { p_product_id: productId });
 
@@ -72,8 +80,11 @@ export default function ProductReviewsList({ productId }: ProductReviewsListProp
 
   const voteHelpfulMutation = useMutation({
     mutationFn: async ({ reviewId, isHelpful }: { reviewId: string; isHelpful: boolean }) => {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error('Not authenticated');
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) throw new Error('Service unavailable');
 
       const { error: existingError } = await supabase
         .from('review_votes')
@@ -87,7 +98,13 @@ export default function ProductReviewsList({ productId }: ProductReviewsListProp
         return;
       }
 
-      const { error } = await // TODO: Replace with Medusa SDK call;
+      const { error } = await supabase
+        .from('review_votes')
+        .insert({
+          review_id: reviewId,
+          user_id: user.id,
+          is_helpful: isHelpful
+        });
 
       if (error) throw error;
 
@@ -108,10 +125,19 @@ export default function ProductReviewsList({ productId }: ProductReviewsListProp
 
   const reportReviewMutation = useMutation({
     mutationFn: async (reviewId: string) => {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await // TODO: Replace with Medusa SDK call;
+      const supabase = createClientSupabaseClient();
+      if (!supabase) throw new Error('Service unavailable');
+
+      const { error } = await supabase
+        .from('review_reports')
+        .insert({
+          review_id: reviewId,
+          user_id: user.id,
+          reason: 'inappropriate'
+        });
 
       if (error) throw error;
     },

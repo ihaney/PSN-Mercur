@@ -60,7 +60,7 @@ export default function SupplierReliabilityMetrics({ supplierId, compact = false
           <div>
             <h3 className="font-semibold text-themed mb-1">Insufficient Data for Reliability Evaluation</h3>
             <p className="text-sm text-themed-secondary">
-              We do not have sufficient data to evaluate the supplier's reliability. Reliability metrics will appear once the supplier completes more orders on the platform.
+              We do not have sufficient data to evaluate the supplier&apos;s reliability. Reliability metrics will appear once the supplier completes more orders on the platform.
             </p>
           </div>
         </div>

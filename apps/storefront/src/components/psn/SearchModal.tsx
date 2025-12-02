@@ -139,7 +139,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           ) : (searchMode === 'all' || searchMode === 'products') && products.length === 0 && 
               (searchMode === 'all' || searchMode === 'suppliers') && suppliers.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
-              <p>No results found for "{searchQuery}"</p>
+              <p>No results found for &quot;{searchQuery}&quot;</p>
             </div>
           ) : (
             <div className="space-y-6">

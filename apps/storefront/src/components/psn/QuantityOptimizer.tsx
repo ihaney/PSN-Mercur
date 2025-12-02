@@ -363,7 +363,7 @@ export default function QuantityOptimizer({
                     </>
                   ) : (
                     <>
-                      ✓ You're already getting a competitive price at this quantity
+                      ✓ You&apos;re already getting a competitive price at this quantity
                     </>
                   )}
                 </p>

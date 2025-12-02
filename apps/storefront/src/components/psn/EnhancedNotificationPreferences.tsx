@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface ExtendedNotificationPrefs {
   email_notifications: boolean;
@@ -53,8 +55,14 @@ export default function EnhancedNotificationPreferences() {
 
   const fetchPreferences = async () => {
     try {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
+      const user = await getCurrentUser();
       if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        return;
+      }
 
       const { data, error } = await supabase
         .from('notification_preferences')
@@ -81,9 +89,15 @@ export default function EnhancedNotificationPreferences() {
   const updatePreference = async (updates: Partial<ExtendedNotificationPrefs>) => {
     setSaving(true);
     try {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
+      const user = await getCurrentUser();
       if (!user) {
         toast.error('Please sign in to update preferences');
+        return;
+      }
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
         return;
       }
 
@@ -229,7 +243,7 @@ export default function EnhancedNotificationPreferences() {
           </h3>
           <div className="p-4 dark:bg-gray-800/50 light:bg-gray-50 rounded-lg space-y-3">
             <p className="text-sm dark:text-gray-400 light:text-gray-600">
-              Set a time range when you don't want to receive notifications
+              Set a time range when you don&apos;t want to receive notifications
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div>

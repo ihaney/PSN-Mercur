@@ -8,6 +8,8 @@ import NotificationGroupsPanel from './NotificationGroupsPanel';
 import SnoozedNotificationsView from './SnoozedNotificationsView';
 import NotificationSnoozeModal from './NotificationSnoozeModal';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface EnhancedUnifiedNotificationsCenterProps {
   onClose?: () => void;
@@ -31,7 +33,10 @@ export default function EnhancedUnifiedNotificationsCenter({
     setupRealtimeSubscription();
 
     return () => {
-      supabase.removeAllChannels();
+      const supabase = createClientSupabaseClient();
+      if (supabase) {
+        supabase.removeAllChannels();
+      }
     };
   }, []);
 
@@ -43,13 +48,19 @@ export default function EnhancedUnifiedNotificationsCenter({
   const loadNotifications = async () => {
     setLoading(true);
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        return;
+      }
 
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -67,8 +78,14 @@ export default function EnhancedUnifiedNotificationsCenter({
 
   const setupRealtimeSubscription = async () => {
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        console.error('Supabase not configured');
+        return;
+      }
 
       const channel = supabase
         .channel('notifications-realtime')
@@ -78,7 +95,7 @@ export default function EnhancedUnifiedNotificationsCenter({
             event: 'INSERT',
             schema: 'public',
             table: 'notifications',
-            filter: `user_id=eq.${session.user.id}`
+            filter: `user_id=eq.${user.id}`
           },
           async (payload) => {
             const newNotification = payload.new;
@@ -109,7 +126,7 @@ export default function EnhancedUnifiedNotificationsCenter({
             event: 'UPDATE',
             schema: 'public',
             table: 'notifications',
-            filter: `user_id=eq.${session.user.id}`
+            filter: `user_id=eq.${user.id}`
           },
           (payload) => {
             setNotifications(prev =>
@@ -139,12 +156,15 @@ export default function EnhancedUnifiedNotificationsCenter({
     channel: string
   ) => {
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return;
 
       await supabase.rpc('track_notification_delivery', {
         p_notification_id: notificationId,
-        p_user_id: session.user.id,
+        p_user_id: user.id,
         p_delivery_channel: channel,
         p_delivery_status: 'delivered'
       });
@@ -155,8 +175,11 @@ export default function EnhancedUnifiedNotificationsCenter({
 
   const handleNotificationClick = async (notificationId: string) => {
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return;
 
       await supabase
         .from('notifications')
@@ -165,7 +188,7 @@ export default function EnhancedUnifiedNotificationsCenter({
 
       await supabase.rpc('track_notification_interaction', {
         p_notification_id: notificationId,
-        p_user_id: session.user.id,
+        p_user_id: user.id,
         p_interaction_type: 'clicked'
       });
 
@@ -185,13 +208,19 @@ export default function EnhancedUnifiedNotificationsCenter({
 
   const handleMarkAllAsRead = async () => {
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
 
       await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .eq('is_read', false);
 
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));

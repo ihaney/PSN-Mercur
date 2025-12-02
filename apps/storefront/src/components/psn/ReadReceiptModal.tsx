@@ -143,7 +143,7 @@ export default function ReadReceiptModal({ messageId, onClose }: ReadReceiptModa
         {messageInfo && (
           <div className="p-4 dark:bg-gray-900/50 light:bg-gray-50 border-b dark:border-gray-700 light:border-gray-200">
             <p className="text-sm dark:text-gray-300 light:text-gray-700 line-clamp-2">
-              "{messageInfo.content}"
+              &quot;{messageInfo.content}&quot;
             </p>
             <p className="text-xs dark:text-gray-500 light:text-gray-500 mt-1">
               Sent {formatDateTime(messageInfo.created_at)}

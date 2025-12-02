@@ -27,7 +27,7 @@ export default function TermsAndConditionsModal({ isOpen, onClose }: TermsAndCon
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="prose prose-invert max-w-none">
             <p className="text-gray-300 mb-4">
-              By using Paisán, users agree to use the platform only for lawful purposes and acknowledge that Paisán serves solely as a connector between buyers and Latin American suppliers and their associated marketplaces. Paisán does not purport to own or sell any of these products directly, all ownership and corresponding benefits is attributed to the product's suppliers and respective marketplaces.
+              By using Paisán, users agree to use the platform only for lawful purposes and acknowledge that Paisán serves solely as a connector between buyers and Latin American suppliers and their associated marketplaces. Paisán does not purport to own or sell any of these products directly, all ownership and corresponding benefits is attributed to the product&apos;s suppliers and respective marketplaces.
             </p>
 
             <p className="text-gray-300 mb-4">

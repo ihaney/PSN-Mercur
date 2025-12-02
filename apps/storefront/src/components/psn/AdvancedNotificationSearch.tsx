@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, Filter, Calendar, Tag, User, SlidersHorizontal, Download } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface AdvancedNotificationSearchProps {
   onResultClick?: (notificationId: string) => void;
@@ -60,14 +62,20 @@ export default function AdvancedNotificationSearch({
 
     setLoading(true);
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) {
+      const user = await getCurrentUser();
+      if (!user) {
         toast.error('Please sign in to search notifications');
         return;
       }
 
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Search service unavailable');
+        return;
+      }
+
       const { data, error } = await supabase.rpc('search_notifications', {
-        p_user_id: session.user.id,
+        p_user_id: user.id,
         p_search_query: searchQuery,
         p_notification_type: selectedType === 'all' ? null : selectedType,
         p_limit: 50

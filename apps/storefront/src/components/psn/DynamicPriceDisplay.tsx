@@ -209,7 +209,7 @@ export default function DynamicPriceDisplay({
                 <div>
                   <p className="text-sm font-medium text-green-400">Great Choice!</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    You're saving {formatPrice((discountAmount / quantity).toFixed(2))} per unit with this quantity
+                    You&apos;re saving {formatPrice((discountAmount / quantity).toFixed(2))} per unit with this quantity
                   </p>
                 </div>
               </div>

@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { Star, Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface ReviewSubmissionFormProps {
   productId: string;
@@ -52,8 +54,17 @@ export default function ReviewSubmissionForm({
     setLoading(true);
 
     try {
-      const { data: { user } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getUser();
-      if (!user) throw new Error('Not authenticated');
+      const user = await getCurrentUser();
+      if (!user) {
+        toast.error('Please sign in to submit a review');
+        return;
+      }
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
 
       const imageUrls: string[] = [];
 

@@ -2,7 +2,7 @@
 
 import { CartProvider } from "@/components/providers"
 import { LanguageProvider } from "@/contexts/LanguageContext"
-import { NavigationProvider } from "@/app/[locale]/(main)/layout"
+import { NavigationProvider } from "@/contexts/NavigationContext"
 import { Cart } from "@/types/cart"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'

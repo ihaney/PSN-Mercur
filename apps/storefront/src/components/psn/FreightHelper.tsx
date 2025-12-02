@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Package, Truck, Ship, Plane, DollarSign, Clock, Info, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useQuickFreightEstimate, useProductHTSCode } from '@/hooks/useFreightCalculator';
 import { formatShippingMethod, getProductHTSWithTariff, getAvailableDestinationCountries } from '@/lib/freightCalculator';
 import LoadingSpinner from './LoadingSpinner';
@@ -240,8 +241,8 @@ export default function FreightHelper({
                 <p className="text-xs text-gray-400 leading-relaxed">
                   These estimates are based on typical shipping scenarios and current tariff rates.
                   Final costs depend on actual weight, packaging, chosen carrier, and any additional
-                  services. Use our <a href="/tools/freight-tariff-helper" className="text-[#F4A024] hover:underline">
-                  Freight & Tariff Helper</a> for a detailed breakdown with multiple products and shipping options.
+                  services.                   Use our <Link href="/tools/freight-tariff-helper" className="text-[#F4A024] hover:underline">
+                  Freight & Tariff Helper</Link> for a detailed breakdown with multiple products and shipping options.
                 </p>
               </div>
             </>

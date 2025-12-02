@@ -1,5 +1,5 @@
 import { SellerReviewList, SellerScore } from "@/components/molecules"
-import { getSellerByHandle } from "@/lib/data/seller"
+import { getSellerByHandle } from "@/lib/data/seller-public"
 import { SellerProps } from "@/types/seller"
 
 export const SellerReviewTab = async ({

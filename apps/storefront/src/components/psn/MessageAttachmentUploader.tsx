@@ -3,6 +3,8 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X, File, FileText, Image as ImageIcon, Archive, AlertCircle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface MessageAttachmentUploaderProps {
   conversationId: string;
@@ -106,12 +108,12 @@ export default function MessageAttachmentUploader({
   };
 
   const generateStoragePath = async (fileName: string): Promise<string> => {
-    const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-    if (!session?.user) throw new Error('Not authenticated');
+    const user = await getCurrentUser();
+    if (!user) throw new Error('Not authenticated');
 
     const timestamp = Date.now();
     const sanitizedName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    return `${session.user.id}/${conversationId}/${timestamp}_${sanitizedName}`;
+    return `${user.id}/${conversationId}/${timestamp}_${sanitizedName}`;
   };
 
   const createPreviewUrl = async (file: File): Promise<string | undefined> => {
@@ -134,9 +136,15 @@ export default function MessageAttachmentUploader({
     setUploadProgress(0);
 
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) {
+      const user = await getCurrentUser();
+      if (!user) {
         toast.error('You must be logged in to upload files');
+        return;
+      }
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('File storage unavailable');
         return;
       }
 

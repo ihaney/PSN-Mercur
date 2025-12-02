@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X, Zap, Clock, Tag, MessageSquare, Power, PowerOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface AutomatedRule {
   id: string;
@@ -62,6 +64,13 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
 
   const fetchRules = async () => {
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('automated_template_rules')
         .select(`
@@ -86,6 +95,9 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
 
   const fetchTemplates = async () => {
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) return;
+
       const { data, error } = await supabase
         .from('message_templates')
         .select('id, title, content, category')
@@ -112,9 +124,15 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
     }
 
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) {
+      const user = await getCurrentUser();
+      if (!user) {
         toast.error('You must be logged in');
+        return;
+      }
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
         return;
       }
 
@@ -134,7 +152,7 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
           priority: formData.priority,
           delay_seconds: formData.delay_seconds,
           require_manual_approval: formData.require_manual_approval,
-          created_by: session.user.id
+          created_by: user.id
         });
 
       if (error) throw error;
@@ -156,6 +174,12 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
     }
 
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
+
       const triggerConditions: any = {};
       if (formData.trigger_type === 'keyword') {
         triggerConditions.keywords = formData.keywords.filter(k => k.trim());
@@ -190,6 +214,12 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
     if (!confirm('Are you sure you want to delete this automation rule?')) return;
 
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
+
       const { error } = await supabase
         .from('automated_template_rules')
         .delete()
@@ -207,6 +237,12 @@ export default function AutomatedResponseRulesManager({ supplierId }: AutomatedR
 
   const toggleRuleActive = async (rule: AutomatedRule) => {
     try {
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
+
       const { error } = await supabase
         .from('automated_template_rules')
         .update({ is_active: !rule.is_active })

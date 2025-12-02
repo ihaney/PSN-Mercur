@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Search, Check, Forward, Package, Building2 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
+import { getCurrentUser } from '@/lib/data/user-actions';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface Conversation {
   id: string;
@@ -55,20 +57,26 @@ export default function MessageForwardModal({
 
   const fetchConversations = async () => {
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) return;
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) {
+        toast.error('Service unavailable');
+        return;
+      }
 
       const { data: supplierClaim } = await supabase
         .from('supplier_claim_requests')
         .select('supplier_id')
-        .eq('reviewed_by_auth_id', session.user.id)
+        .eq('reviewed_by_auth_id', user.id)
         .eq('status', 'approved')
         .maybeSingle();
 
       const { data: memberProfile } = await supabase
         .from('members')
         .select('id')
-        .eq('auth_id', session.user.id)
+        .eq('auth_id', user.id)
         .maybeSingle();
 
       setIsSupplier(!!supplierClaim);
@@ -127,8 +135,11 @@ export default function MessageForwardModal({
 
     setForwarding(true);
     try {
-      const { data: { session } } = await // TODO: Use getCurrentUser() from @/lib/data/cookies - getSession();
-      if (!session?.user) throw new Error('Not authenticated');
+      const user = await getCurrentUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const supabase = createClientSupabaseClient();
+      if (!supabase) throw new Error('Service unavailable');
 
       let successCount = 0;
       let failCount = 0;

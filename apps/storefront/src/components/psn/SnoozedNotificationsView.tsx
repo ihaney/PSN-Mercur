@@ -97,7 +97,7 @@ export default function SnoozedNotificationsView({ onNotificationClick }: Snooze
           No snoozed notifications
         </p>
         <p className="text-xs dark:text-gray-500 light:text-gray-500 mt-2">
-          Snoozed notifications will appear here until they're ready to show again
+          Snoozed notifications will appear here until they&apos;re ready to show again
         </p>
       </div>
     );
