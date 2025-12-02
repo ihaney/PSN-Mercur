@@ -1,6 +1,6 @@
 "use server"
 
-import { createServerSupabaseClient } from "../lib/supabase-server"
+import { createServerSupabaseClient } from "../supabase-server"
 
 /**
  * Verify Supabase connection and table schema

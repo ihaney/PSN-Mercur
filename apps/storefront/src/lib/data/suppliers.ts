@@ -1,7 +1,7 @@
 "use server"
 
 import { sdk } from "../config"
-import { createServerSupabaseClient } from "../lib/supabase-server"
+import { createServerSupabaseClient } from "../supabase-server"
 import { getSellerByHandle } from "./seller" // Mercur's existing function
 import { listSellers } from "./seller" // Use existing listSellers if available, or create new
 import type { SellerProps } from "@/types/seller"
