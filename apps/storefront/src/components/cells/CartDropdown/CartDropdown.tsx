@@ -11,8 +11,9 @@ import { HttpTypes } from "@medusajs/types"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import { useCartContext } from "@/components/providers"
+import { Cart } from "@/types/cart"
 
-const getItemCount = (cart: HttpTypes.StoreCart | null) => {
+const getItemCount = (cart: HttpTypes.StoreCart | Cart | null) => {
   return cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0
 }
 

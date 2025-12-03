@@ -5,6 +5,7 @@ import { useCrossSellProducts, trackRecommendationInteraction } from '@/hooks/us
 import ProductCard from './ProductCard';
 import { ArrowRight } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
+import type { Product } from '@/types/product';
 
 interface CrossSellSectionProps {
   productId: string;
@@ -59,6 +60,25 @@ export default function CrossSellSection({
     }
   };
 
+  // Transform product data to Product type
+  const transformProduct = (product: any): Product => ({
+    id: Number(product.id) || Number(product.product_id) || 0,
+    brand: product.brand || 'Unknown',
+    handle: product.handle || String(product.id || product.product_id || ''),
+    title: product.title || product.name || product.product_title || 'Untitled Product',
+    name: product.name || product.product_title,
+    size: product.size || '',
+    price: Number(product.price) || Number(product.product_price) || 0,
+    originalPrice: Number(product.originalPrice) || Number(product.price) || Number(product.product_price) || 0,
+    thumbnail: product.thumbnail || product.product_image_url || product.image || '/placeholder.png',
+    created_at: product.created_at || new Date().toISOString(),
+    images: product.images,
+    variants: product.variants,
+    categories: product.categories,
+    regions: product.regions,
+    seller: product.seller,
+  });
+
   if (isLoading) {
     return (
       <div className="py-12">
@@ -95,54 +115,31 @@ export default function CrossSellSection({
 
       {/* Desktop: Grid layout */}
       <div className="hidden lg:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div key={product.product_id} onClick={() => handleProductClick(product)}>
-            <ProductCard
-              id={product.product_id}
-              name={product.product_title}
-              price={product.product_price} // Changed from Product_Price
-              Product_Price={product.product_price} // Legacy alias
-              image={product.product_image_url}
-              thumbnail={product.product_image_url} // Mercur format
-              country="Unknown"
-              category="Unknown"
-              seller={product.seller_name || product.supplier_name} // Changed from supplier
-              supplier={product.supplier_name} // Legacy alias
-              sellerId={product.seller_id || product.supplier_id} // Changed from supplierId
-              supplierId={product.supplier_id} // Legacy alias
-              moq={product.product_moq || '1'} // Mercur format
-              Product_MOQ={product.product_moq || '1'} // Legacy alias
-              sourceUrl=""
-              marketplace="Paisán"
-            />
-          </div>
-        ))}
+        {products.map((product) => {
+          const productForCard = transformProduct(product);
+          return (
+            <div key={product.product_id || product.id} onClick={() => handleProductClick(product)}>
+              <ProductCard product={productForCard} />
+            </div>
+          );
+        })}
       </div>
 
       {/* Mobile: Horizontal scroll */}
       <div className="lg:hidden overflow-x-auto -mx-4 px-4">
         <div className="flex gap-4 pb-4" style={{ width: 'max-content' }}>
-          {products.map((product) => (
-            <div
-              key={product.product_id}
-              className="w-64 flex-shrink-0"
-              onClick={() => handleProductClick(product)}
-            >
-              <ProductCard
-                id={product.product_id}
-                name={product.product_title}
-                Product_Price={product.product_price}
-                image={product.product_image_url}
-                country="Unknown"
-                category="Unknown"
-                supplier={product.supplier_name}
-                supplierId={product.supplier_id}
-                Product_MOQ={product.product_moq || '1'}
-                sourceUrl=""
-                marketplace="Paisán"
-              />
-            </div>
-          ))}
+          {products.map((product) => {
+            const productForCard = transformProduct(product);
+            return (
+              <div
+                key={product.product_id || product.id}
+                className="w-64 flex-shrink-0"
+                onClick={() => handleProductClick(product)}
+              >
+                <ProductCard product={productForCard} />
+              </div>
+            );
+          })}
         </div>
       </div>
 

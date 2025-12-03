@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { MapPin } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
-import { LazyImage } from './atoms/LazyImage/LazyImage';
+import LazyImage from './LazyImage';
 
 interface CountryListItem {
   Country_ID: string;
@@ -52,7 +52,6 @@ export default function CountryCard({ country, priority = false, index = 0 }: Co
           alt={country.Country_Title}
           width={64}
           height={64}
-          aspectRatio="1/1"
           sizes="64px"
           priority={priority}
           className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-xl dark:bg-gray-700/30 bg-gray-100 p-2 flex-shrink-0"

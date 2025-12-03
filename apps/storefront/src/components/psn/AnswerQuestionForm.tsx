@@ -24,8 +24,8 @@ export function AnswerQuestionForm({
   const { data: userType } = useCheckUserType(supplierId, productId)
   const answerMutation = useAnswerQuestion()
 
-  const answererType = userType?.type || 'buyer'
-  const isVerifiedPurchaser = userType?.isVerifiedPurchaser || false
+  const answererType: 'buyer' | 'supplier' = (userType?.type as 'buyer' | 'supplier') || 'buyer'
+  const isVerifiedPurchaser = (userType && 'isVerifiedPurchaser' in userType) ? (userType.isVerifiedPurchaser as boolean) : false
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

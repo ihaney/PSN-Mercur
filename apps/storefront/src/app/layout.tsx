@@ -6,6 +6,7 @@ import { Toaster as HotToaster } from 'react-hot-toast'
 import Head from "next/head"
 import { retrieveCart } from "@/lib/data/cart"
 import { Providers } from "./providers"
+import { Cart } from "@/types/cart"
 
 const funnelDisplay = Funnel_Display({
   variable: "--font-funnel-sans",
@@ -44,7 +45,7 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>
 }>) {
   const { locale } = await params
-  const cart = await retrieveCart()
+  const cart = (await retrieveCart()) as Cart | null
 
   const ALGOLIA_APP = process.env.NEXT_PUBLIC_ALGOLIA_ID
   const htmlLang = locale || "en"

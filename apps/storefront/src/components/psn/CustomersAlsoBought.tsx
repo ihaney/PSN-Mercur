@@ -7,7 +7,8 @@ import { coPurchaseService } from '../services/coPurchaseAnalytics';
 import ProductCard from './ProductCard';
 import LoadingSpinner from './LoadingSpinner';
 import toast from 'react-hot-toast';
-import type { Product } from '../types';
+import type { Product } from '@/types/product';
+import { createClientSupabaseClient } from '@/lib/supabase-client';
 
 interface CustomersAlsoBoughtProps {
   productId: string;
@@ -27,6 +28,16 @@ export default function CustomersAlsoBought({
   const { data: recommendations, isLoading } = useQuery({
     queryKey: ['customersAlsoBought', productId, limit],
     queryFn: async () => {
+      const supabase = createClientSupabaseClient()
+      if (!supabase) {
+        // Fallback to coPurchaseService if Supabase is not available
+        const fallbackProducts = await coPurchaseService.getCoPurchasedProducts(productId, limit)
+        return {
+          products: fallbackProducts,
+          confidenceScores: {},
+          isFallback: true
+        }
+      }
       const { data: relationships, error: relError } = await supabase
         .from('customers_also_bought')
         .select('also_bought_product_id, confidence_score')
@@ -111,7 +122,7 @@ export default function CustomersAlsoBought({
                 moq: p.Product_MOQ || null,
                 source_name: p.Product_Source_Name || null,
               },
-            } as Product
+            } as unknown as Product
           }) || [],
           confidenceScores: {},
           isFallback: true
@@ -188,7 +199,7 @@ export default function CustomersAlsoBought({
               moq: p.Product_MOQ || null,
               source_name: p.Product_Source_Name || null,
             },
-          } as Product
+            } as unknown as Product
         }) || [],
         confidenceScores: confidenceMap,
         isFallback: false
@@ -198,13 +209,18 @@ export default function CustomersAlsoBought({
     staleTime: 1000 * 60 * 10
   });
 
+  const recommendationsData: { products: Product[]; confidenceScores: Record<string, number>; isFallback: boolean } = 
+    recommendations && typeof recommendations === 'object' && 'products' in recommendations 
+      ? recommendations as { products: Product[]; confidenceScores: Record<string, number>; isFallback: boolean }
+      : { products: [], confidenceScores: {}, isFallback: false }
+
   useEffect(() => {
-    if (recommendations?.products && recommendations.products.length > 0 && !trackedView) {
-      const productIds = recommendations.products.map(p => p.id);
+    if (recommendationsData?.products && recommendationsData.products.length > 0 && !trackedView) {
+      const productIds = recommendationsData.products.map(p => p.id);
       coPurchaseService.trackRecommendationView(productId, productIds);
       setTrackedView(true);
     }
-  }, [recommendations, productId, trackedView]);
+  }, [recommendationsData, productId, trackedView]);
 
   const handleProductClick = (clickedProductId: string) => {
     const confidence = recommendations?.confidenceScores?.[clickedProductId] || 0;
@@ -219,7 +235,7 @@ export default function CustomersAlsoBought({
     );
   }
 
-  if (!recommendations?.products || recommendations.products.length === 0) {
+  if (!recommendationsData?.products || recommendationsData.products.length === 0) {
     return null;
   }
 
@@ -232,10 +248,10 @@ export default function CustomersAlsoBought({
           </div>
           <div>
             <h2 className="text-2xl font-bold text-white">
-              {recommendations.isFallback ? 'You May Also Like' : 'Customers Also Bought'}
+              {recommendationsData.isFallback ? 'You May Also Like' : 'Customers Also Bought'}
             </h2>
             <p className="text-sm text-gray-400">
-              {recommendations.isFallback
+              {recommendationsData.isFallback
                 ? 'Similar products from our catalog'
                 : 'Products frequently purchased together'}
             </p>
@@ -244,11 +260,11 @@ export default function CustomersAlsoBought({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6">
-        {recommendations.products.map((product, index) => {
-          const confidence = recommendations.confidenceScores?.[product.id];
+        {recommendationsData.products.map((product, index) => {
+          const confidence = recommendationsData.confidenceScores?.[product.id];
           return (
             <div key={product.id} className="relative" onClick={() => handleProductClick(product.id)}>
-              {!recommendations.isFallback && confidence && (
+              {!recommendationsData.isFallback && confidence && (
                 <div className="absolute top-2 right-2 z-10 px-2 py-1 bg-green-500/90 backdrop-blur-sm rounded-lg text-xs font-medium text-white flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
                   {Math.round(confidence * 100)}% match

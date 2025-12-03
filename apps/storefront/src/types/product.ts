@@ -11,16 +11,22 @@ export interface AdditionalAttributeProps {
 }
 
 export interface Product {
-  id: number
+  id: number | string
   brand: string
   handle: string
   title: string
+  name?: string
   size: string
   price: number
   originalPrice: number
   thumbnail: string
   created_at: string
   sold?: boolean
+  images?: SingleProductImage[]
+  variants?: any[]
+  categories?: any[]
+  regions?: any[]
+  seller?: any
 }
 
 export type SortOptions = "price_asc" | "price_desc" | "created_at"

@@ -99,7 +99,7 @@ export default function SuppliersPageClient({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {suppliers.map((supplier, index) => (
           <SupplierCard 
-            key={supplier.id || supplier.Supplier_ID || index} 
+            key={supplier.id || index} 
             supplier={supplier} 
             priority={index < 6}
             index={index}

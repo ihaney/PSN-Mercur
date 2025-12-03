@@ -31,7 +31,11 @@ export default function SupplierPageClient({ supplier, initialProducts, locale }
       await toggleSavedSupplier({
         id: supplier.id,
         name: supplier.name || '',
+        handle: supplier.handle || supplier.id,
         description: supplier.description || '',
+        photo: supplier.photo || '',
+        tax_id: supplier.tax_id || '',
+        created_at: supplier.created_at || new Date().toISOString(),
         website: supplier.metadata?.website || '',
         email: supplier.email || '',
         location: supplier.metadata?.address_line || '',

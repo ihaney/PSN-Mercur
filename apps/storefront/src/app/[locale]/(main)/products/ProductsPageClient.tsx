@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/psn/LoadingSpinner'
 import { listProducts } from '@/lib/data/products' // Mercur's data fetching
 import type { HttpTypes } from '@medusajs/types'
 import type { SellerProps } from '@/types/seller'
+import type { Product } from '@/types/product'
 
 type ProductWithSeller = HttpTypes.StoreProduct & { seller?: SellerProps }
 
@@ -180,14 +181,16 @@ export default function ProductsPageClient({
 
         {products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product, index) => (
-              <ProductCard 
-                key={product.id} 
-                product={product}
-                priority={index < 4}
-                index={index}
-              />
-            ))}
+            {products
+              .filter((p) => 'brand' in p && 'size' in p && 'price' in p)
+              .map((product, index) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product as unknown as Product}
+                  priority={index < 4}
+                  index={index}
+                />
+              ))}
           </div>
         ) : (
           <div className="text-center py-12">

@@ -47,8 +47,14 @@ export type Supplier = SellerProps & {
   Supplier_Location?: string
   Supplier_Source_ID?: string
   Supplier_Website?: string
+  website?: string
   Supplier_Email?: string
   Supplier_Whatsapp?: string
+  whatsapp?: string
+  location?: string
+  country?: string
+  city?: string
+  sourceId?: string
   product_keywords?: string
   Supplier_Logo?: string
   profile_picture_url?: string

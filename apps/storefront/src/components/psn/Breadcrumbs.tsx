@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight, Home } from 'lucide-react';
-import { useNavigation } from '@/app/[locale]/(main)/layout';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 interface BreadcrumbsProps {
   currentPageTitle?: string;

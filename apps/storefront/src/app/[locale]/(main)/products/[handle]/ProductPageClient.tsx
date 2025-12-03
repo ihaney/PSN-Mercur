@@ -378,11 +378,11 @@ export default function ProductPageClient({
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts
-              .filter((p) => 'brand' in p && 'size' in p && 'price' in p)
+              .filter((p) => 'brand' in p && 'size' in p && 'price' in p && 'originalPrice' in p)
               .map((relatedProduct) => (
                 <ProductCard 
                   key={relatedProduct.id} 
-                  product={relatedProduct as Product}
+                  product={relatedProduct as unknown as Product}
                 />
               ))}
           </div>
@@ -391,7 +391,13 @@ export default function ProductPageClient({
 
       {/* Lazy loaded sections */}
       <Suspense fallback={<LoadingSpinner />}>
-        <FreightHelper product={product} />
+        <FreightHelper 
+          productId={product.id}
+          productPrice={String(variantPrice || product.variants?.[0]?.calculated_price?.calculated_amount || 0)}
+          productCategory={product.collection?.handle || product.categories?.[0]?.handle || ''}
+          productMOQ={String(product.metadata?.moq || '1')}
+          productCountry={typeof product.metadata?.country === 'string' ? product.metadata.country : ''}
+        />
         <ProductQASection 
           productId={product.id} 
           supplierId={product.seller?.id}

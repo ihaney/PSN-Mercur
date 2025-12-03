@@ -85,7 +85,7 @@ export default function ComparisonSidebar() {
                     </p>
                   </div>
                   <button
-                    onClick={() => removeFromComparison(product.id)}
+                    onClick={() => removeFromComparison(String(product.id))}
                     className="text-gray-400 hover:text-red-400 transition-colors flex-shrink-0"
                   >
                     <X className="w-4 h-4" />
