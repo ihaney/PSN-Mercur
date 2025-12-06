@@ -1,37 +1,37 @@
 import { BlogPost } from '@/types/blog';
 import { BlogCard } from '@/components/organisms';
 
-export const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "Summer's Most Elegant Accessories",
-    excerpt:
-      "Discover this season's most sophisticated accessories that blend timeless elegance with modern design.",
-    image: '/images/blog/post-1.jpg',
-    category: 'ACCESSORIES',
-    href: '#',
-  },
-  {
-    id: 2,
-    title: 'The Season’s Hottest Trends',
-    excerpt:
-      'From bold colors to nostalgic silhouettes, explore the must-have looks defining this season’s fashion narrative.',
-    image: '/images/blog/post-2.jpg',
-    category: 'STYLE GUIDE',
-    href: '#',
-  },
-  {
-    id: 3,
-    title: 'Minimalist Outerwear Trends',
-    excerpt:
-      'Explore the latest minimalist outerwear pieces that combine functionality with clean aesthetics.',
-    image: '/images/blog/post-3.jpg',
-    category: 'TRENDS',
-    href: '#',
-  },
-];
+// This could come from a CMS, API, or environment config
+const getBlogPosts = (): BlogPost[] => {
+  // Check if blog is enabled
+  const blogEnabled = process.env.NEXT_PUBLIC_ENABLE_BLOG === 'true'
+  
+  if (!blogEnabled) {
+    return []
+  }
+
+  // Return blog posts (could be fetched from CMS)
+  // For now, return empty array - you can add blog posts here or fetch from CMS
+  return [
+    // Example blog posts (uncomment and customize when ready):
+    // {
+    //   id: 1,
+    //   title: "B2B Sourcing Guide for Latin America",
+    //   excerpt: "Learn how to effectively source products from trusted Latin American suppliers.",
+    //   image: '/images/blog/post-1.jpg',
+    //   category: 'GUIDE',
+    //   href: '/blog/b2b-sourcing-guide',
+    // },
+  ]
+}
 
 export function BlogSection() {
+  const blogPosts = getBlogPosts()
+
+  if (blogPosts.length === 0) {
+    return null // Don't render if no blog posts
+  }
+
   return (
     <section className='bg-tertiary container'>
       <div className='flex items-center justify-between mb-12'>

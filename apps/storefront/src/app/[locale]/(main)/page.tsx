@@ -6,6 +6,8 @@ import { listProducts } from "@/lib/data/products"
 import { getRegion } from "@/lib/data/regions"
 import { toHreflang } from "@/lib/helpers/hreflang"
 import HomePageClient from "./HomePageClient"
+import { HomeCategories } from "@/components/sections"
+import { HomePopularBrandsSection } from "@/components/sections"
 
 export async function generateMetadata({
   params,
@@ -175,10 +177,16 @@ export default async function Home({
         }}
       />
 
+      {/* Categories Section - Server Component */}
+      <HomeCategories heading="Browse Categories" />
+      
       <HomePageClient 
         initialProducts={featuredProducts} 
         locale={locale} 
       />
+      
+      {/* Popular Brands Section - Server Component */}
+      <HomePopularBrandsSection />
     </>
   )
 }

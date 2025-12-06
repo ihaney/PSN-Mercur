@@ -8,6 +8,10 @@ import LoadingSpinner from '@/components/psn/LoadingSpinner'
 import type { Product } from '@/types/product'
 import type { HttpTypes } from '@medusajs/types'
 
+// Import Mercur sections (server components - will be rendered in page.tsx)
+import { BannerSection } from '@/components/sections'
+import { BlogSection } from '@/components/sections'
+
 // Lazy load non-critical components
 const QuickLookMetrics = dynamic(() => import('@/components/psn/QuickLookMetrics'), {
   ssr: false,
@@ -49,7 +53,7 @@ export default function HomePageClient({ initialProducts, locale }: HomePageClie
                 .map((product, index) => (
                   <ProductCard 
                     key={product.id} 
-                    product={product as unknown as Product}
+                    product={product as Product} 
                     priority={index < 4}
                     index={index}
                   />
@@ -59,19 +63,16 @@ export default function HomePageClient({ initialProducts, locale }: HomePageClie
         </section>
       )}
 
-      {/* Lazy loaded sections */}
-      <div className="container mx-auto px-4 py-8">
-        <QuickLookMetrics />
-      </div>
-      
-      <div className="container mx-auto px-4 py-8">
-        <DataQualitySection />
-      </div>
-      
-      <div className="container mx-auto px-4 py-8">
-        <RecentlyViewedProducts />
-      </div>
+      {/* Promotional Banner */}
+      <BannerSection />
+
+      {/* PSN-specific sections */}
+      <QuickLookMetrics />
+      <DataQualitySection />
+      <RecentlyViewedProducts />
+
+      {/* Blog Section (only renders if enabled and has content) */}
+      <BlogSection />
     </div>
   )
 }
-
