@@ -414,6 +414,9 @@ export default function EnhancedUnifiedNotificationsCenter({
       {snoozeModalOpen && selectedNotificationId && (
         <NotificationSnoozeModal
           notificationId={selectedNotificationId}
+          notificationTitle={
+            notifications.find(n => n.id === selectedNotificationId)?.title || 'Notification'
+          }
           onClose={() => {
             setSnoozeModalOpen(false);
             setSelectedNotificationId(null);

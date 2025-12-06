@@ -43,7 +43,12 @@ export default function FreightHelper({
     'United States'
   );
 
-  const { data: htsCode, isLoading: htsLoading } = useQuery({
+  const { data: htsCode, isLoading: htsLoading } = useQuery<{
+    full_code?: string
+    description?: string
+    destination_rate?: number
+    general_rate?: number
+  } | null>({
     queryKey: ['product-hts-tariff', productId, destinationCountry],
     queryFn: () => getProductHTSWithTariff(productId, destinationCountry),
     enabled: !!productId && isValidPrice,
@@ -64,7 +69,7 @@ export default function FreightHelper({
   };
 
   const estimatedDuty = htsCode && isValidPrice
-    ? priceValue * (htsCode.destination_rate || htsCode.general_rate)
+    ? priceValue * ((htsCode.destination_rate ?? htsCode.general_rate) || 0)
     : null;
 
   const estimatedLandedCost = freightEstimate && isValidPrice && estimatedDuty !== null
@@ -186,7 +191,7 @@ export default function FreightHelper({
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-400">Duty Rate:</span>
                       <span className="text-sm font-semibold text-[#F4A024]">
-                        {((htsCode.destination_rate || htsCode.general_rate) * 100).toFixed(2)}%
+                        {(((htsCode.destination_rate ?? htsCode.general_rate) || 0) * 100).toFixed(2)}%
                       </span>
                     </div>
                     {estimatedDuty !== null && estimatedDuty > 0 ? (

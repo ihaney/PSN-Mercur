@@ -216,14 +216,14 @@ export default function CustomersAlsoBought({
 
   useEffect(() => {
     if (recommendationsData?.products && recommendationsData.products.length > 0 && !trackedView) {
-      const productIds = recommendationsData.products.map(p => p.id);
+      const productIds = recommendationsData.products.map(p => String(p.id));
       coPurchaseService.trackRecommendationView(productId, productIds);
       setTrackedView(true);
     }
   }, [recommendationsData, productId, trackedView]);
 
   const handleProductClick = (clickedProductId: string) => {
-    const confidence = recommendations?.confidenceScores?.[clickedProductId] || 0;
+    const confidence = recommendationsData?.confidenceScores?.[clickedProductId] || 0;
     coPurchaseService.trackRecommendationClick(productId, clickedProductId, confidence);
   };
 
@@ -263,7 +263,7 @@ export default function CustomersAlsoBought({
         {recommendationsData.products.map((product, index) => {
           const confidence = recommendationsData.confidenceScores?.[product.id];
           return (
-            <div key={product.id} className="relative" onClick={() => handleProductClick(product.id)}>
+            <div key={product.id} className="relative" onClick={() => handleProductClick(String(product.id))}>
               {!recommendationsData.isFallback && confidence && (
                 <div className="absolute top-2 right-2 z-10 px-2 py-1 bg-green-500/90 backdrop-blur-sm rounded-lg text-xs font-medium text-white flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
